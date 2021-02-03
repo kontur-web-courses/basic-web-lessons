@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
+  <link rel="stylesheet" href="reveal/css/reveal.css"/>
+  <link
+    rel="stylesheet"
+    href="reveal/css/theme/kontur-light.css"
+    id="theme"
+  />
+  <!-- Theme used for syntax highlighting of code -->
+  <link rel="stylesheet" href="reveal/css/highlight/idea-for-light.css"/>
+  <link rel="stylesheet" href="reveal/css/highlight/darkula-for-dark.css"/>
+  <!--[if lt IE 9]>
+  <script src="reveal/js/html5shiv.js"></script>
+  <![endif]-->
+  <script defer src="reveal/js/head.min.js"></script>
+  <script defer src="reveal/js/reveal.js"></script>
+  <script defer src="reveal/initialize.js"></script>
+  <script defer src="reveal/js/d3.min.js"></script>
+
+  <title>Backend #3</title>
+</head>
+<body>
+<div class="reveal">
+  <div class="slides">
+    <section data-markdown>
+      <script type="text/template">
+        # Backend #3
+      </script>
+    </section>
+
+    <section data-markdown>
+      <script type="text/template">
+        # AJAX
+
+        ***
+
+        *AJAX* (Asynchronous Javascript and XML) — подход к использованию технологий для обращения к серверу без перезагрузки страницы.
+
+        ***
+
+        ## Какие API есть у браузера?
+        
+        - Fetch
+        - XMLHttpRequest
+
+        ***
+
+        ## XMLHttpRequest
+        
+        ```
+        // 1. Создаём XMLHttpRequest-объект
+        let xhr = new XMLHttpRequest();
+        // 2. .open инициализирует будующий запрос
+        xhr.open('GET', '/example');
+        // 3. Отсылаем запрос
+        xhr.send();
+
+        // xhr.abort(); // завершить запрос
+        ```
+        
+        ***
+
+        ```
+        // Событие сообщает о получение какого-то ответа
+        xhr.onload = function() {
+          if (xhr.status != 200) {
+            alert(`Ошибка ${xhr.status}: ${xhr.statusText}`);
+          } else {
+            alert(`Готово, получили ${xhr.response.length} байт`); 
+          }
+        };
+        
+        // Событие сообщает о прогрессе получения ответа
+        xhr.onprogress = function(event) {
+          if (event.lengthComputable) {
+            alert(`Получено ${event.loaded} из ${event.total} байт`);
+          } else {
+            alert(`Получено ${event.loaded} байт`); // если в ответе нет заголовка Content-Length
+          }
+        };
+        
+        // Сообытие сообщает, что запрос не был выполнен
+        xhr.onerror = function() {
+          alert("Запрос не удался");
+        };
+        ```
+
+        ***
+
+        ## Fetch
+
+        *Функциональный стиль*
+        ```
+        fetch(url, options)
+          .then(response => response.json())
+          .then(result => /* обрабатываем результат */)
+        ```
+
+        *Императивный стиль*
+        ```
+        let response = await fetch(url, options); // завершается с заголовками ответа
+        let result = await response.json();
+        ```
+
+        ***
+
+        ## Что еще умееют?
+        - Отправка/чтение заголовков
+        - Отправка форм с помощью FormData
+        - Отправка бинарных данных
+        - Запросы на другой origin, используя политику CORS
+
+        *Только XMLHttpRequest*
+        - Синхронные запросы
+        - Прогресс процесса отправки
+
+        ***
+        
+        `xhr.upload` — для событий отправки
+
+        ```
+        xhr.upload.onprogress = function(event) {
+          alert(`Отправлено ${event.loaded} из ${event.total} байт`);
+        };
+        
+        xhr.upload.onload = function() {
+          alert(`Данные успешно отправлены.`);
+        };
+        
+        xhr.upload.onerror = function() {
+          alert(`Произошла ошибка во время отправки: ${xhr.status}`);
+        };
+        ```
+      </script>
+    </section>
+
+    <section data-markdown>
+      <script type="text/template">
+        # COMET
+
+        ***
+
+        *COMET* - набор техник и средств для получения данных по инициативе сервера.
+
+        ***
+        
+        ## Имитация постоянного соединения
+
+        ***
+        
+        ### Polling
+
+        <img src="assets/polling.png" />
+
+        ***
+
+        ### Long polling
+
+        <img src="assets/long-polling.png" />
+
+        ***
+        
+        ## Постоянное соединение
+        
+        ***
+
+        ### Server Sent Events
+
+        <img src="assets/sse.png" />
+
+        ***
+
+        https://fastly-dx-sse-demo.herokuapp.com/flights/
+        <video src="assets/sse-flight.mov" autoplay loop></video> 
+
+      </script>
+    </section>
+
+    <section data-markdown>
+      <script type="text/template">
+        # WebSocket
+
+        ***
+
+        *WebSocket* — протокол связи поверх TCP-соединения, предназначенный для обмена сообщениями между браузером и веб-сервером в режиме реального времени.
+
+        ***
+
+        ### Возможности
+
+        - Постоянное соединение
+        - Передача данных в обоих направлениях
+        - Передача бинарных и текстовых данных
+
+        <img src="assets/websocket.png" />
+
+        ***
+
+        ### Пример
+        
+        ```
+        let socket = new WebSocket("ws://example.com/chat"); // устанавливаем соед.
+        ```
+
+        #### Заголовки запроса
+        ```
+        GET /chat
+        Host: example.com
+        Origin: http://example.com
+        Connection: Upgrade
+        Upgrade: websocket
+        Sec-WebSocket-Key: Iv8io/9s+lYFgZWcXczP8Q==
+        Sec-WebSocket-Version: 13
+        ```
+
+        #### Заголовки ответа
+
+        ```
+        101 Switching Protocols
+        Upgrade: websocket
+        Connection: Upgrade
+        Sec-WebSocket-Accept: hsBlbuDTkk24srzEOTBUlZAlC2g=
+        ```
+
+        ***
+
+        ### API
+        
+        #### Методы:
+        - socket.send(data),
+        - socket.close([code], [reason]).
+
+        #### События:
+        - open
+        - message
+        - error
+        - close
+
+        ***
+
+        #### Отправка сообщения из формы
+        ```
+        document.forms.publish.onsubmit = function() {
+          let outgoingMessage = this.message.value;
+
+          socket.send(outgoingMessage);
+          return false;
+        };
+        ```
+
+        #### Получение сообщения
+        ```
+        socket.onmessage = function(event) {
+          let message = event.data;
+
+          let messageElem = document.createElement('div');
+          messageElem.textContent = message;
+          document.getElementById('messages').prepend(messageElem);
+        }
+        ```
+
+        ***
+
+        <video src="assets/websocket-demo.mov" controls></video> 
+
+        ***
+
+        ### Проблемы
+
+        - Молчаливый отвал соединения
+        - Смена сети клиентом
+        - Повышенная нагрузка на серверы
+      </script>
+    </section>
+
+  </div>
+</div>
+</body>
+</html>
