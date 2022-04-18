@@ -69,7 +69,7 @@ window.addEventListener('load', onLoad);
 ### Как создать промис
 
 ```js
-var promise1 = new Promise(function(resolve, reject) {
+const promise1 = new Promise(function(resolve, reject) {
     setTimeout(resolve, 100, 'foo');
 });
 
@@ -379,11 +379,11 @@ fetch(url, {
 ### Promise.race — когда выполнится хоть один промис
 
 ```js
-var promise1 = new Promise(function(resolve, reject) {
+const promise1 = new Promise(function(resolve, reject) {
 setTimeout(resolve, 500, 'one');
 });
 
-var promise2 = new Promise(function(resolve, reject) {
+const promise2 = new Promise(function(resolve, reject) {
 setTimeout(resolve, 100, 'two');
 });
 
@@ -399,9 +399,9 @@ console.log(value); // 'two'
 ### Promise.all — когда выполнятся все промисы
 
 ```js
-var promise1 = Promise.resolve(3);
-var promise2 = 42;
-var promise3 = new Promise(function(resolve, reject) {
+const promise1 = Promise.resolve(3);
+const promise2 = 42;
+const promise3 = new Promise(function(resolve, reject) {
     setTimeout(resolve, 100, 'foo');
 });
 
@@ -467,7 +467,7 @@ function doAsync(x) {
         }
     });
 }
-var a = 0;
+let a = 0;
 
 doAsync(false)
     .then(x => a = x)
